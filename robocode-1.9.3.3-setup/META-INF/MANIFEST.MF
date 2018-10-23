@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Archiver-Version: Plexus Archiver
+Built-By: flemm
+Created-By: Apache Maven
+Build-Jdk: 1.8.0_162
+Main-Class: net.sf.robocode.installer.AutoExtract
+
