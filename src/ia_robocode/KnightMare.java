@@ -18,10 +18,10 @@ public class KnightMare extends AdvancedRobot {
 	private double energiaNivelAlto = 0;
     private double distanciaCurta = 0;
     private double distanciaLonga = 0;
-	private double agressivadadeMedia = 0;
-	private double agressividadeBaixa = 0;
-	private double agressividadeAlta = 0;
-	private double precisao = 0.05;
+	private double hostilidadeMedia = 0;
+	private double hostilidadeBaixa = 0;
+	private double hostilidadeAlta = 0;
+	private double precisao = 0.01;
 	private double rolamentoCanhao = 0;
 	private double ultimoRolamentoCanhao = 0;
 	/**
@@ -29,13 +29,14 @@ public class KnightMare extends AdvancedRobot {
 	 */
 	public void run() {
 		
-		colorfy();
-		
+		roboColor();
+		this.energia = this.getEnergy();
+
 		// Loop principal para execução do robô
 		while(true) {
-			
-			// Replace the next 4 lines with any behavior you would like
 			energia = this.getEnergy();
+
+			// Replace the next 4 lines with any behavior you would like
 			
 			if(ultimoRolamentoCanhao <= 0){
 				turnLeft(10);
@@ -49,7 +50,7 @@ public class KnightMare extends AdvancedRobot {
 	 * Configuração das cores do robô e de seus componentes
 	 * 
 	 */
-	private void colorfy() {
+	private void roboColor() {
 		setBodyColor(Color.pink);
 		setGunColor(Color.yellow);
 		setRadarColor(Color.lightGray);
@@ -75,7 +76,10 @@ public class KnightMare extends AdvancedRobot {
 			if (getGunHeat() == 0) {
 				this.fuzzyControle(evento);
 			}
+		} else {
+			turnRight(rolamentoCanhao);
 		}
+		
 		if (this.rolamentoCanhao == 0) {
 			scan();
 		}
@@ -91,11 +95,12 @@ public class KnightMare extends AdvancedRobot {
 	private void fuzzyControle(ScannedRobotEvent evento) {
 		this.fuzzificarEnergia(this.energia);
 		this.fuzzificarDistancia(evento.getDistance());
-		this.resetAgressividade();
-		this.gerarAgressividade();
+		this.resetHostilidade();
+		this.criaHostilidade();
 		
 		double potenciaTiro = defuzificar();
 		
+		System.out.println("Potência: " + potenciaTiro);
 		fire(potenciaTiro);		
 		ahead(20);
 	}
@@ -123,6 +128,7 @@ public class KnightMare extends AdvancedRobot {
 	 * @param distancia
 	 */
 	private void fuzzificarDistancia(double distancia) {
+				
 		if (distancia <= 180) {
 			this.distanciaLonga = 0.0;
 			this.distanciaCurta = 1.0;
@@ -137,11 +143,11 @@ public class KnightMare extends AdvancedRobot {
 	
 	/**
 	 * Método que realiza a defuzificação, onde cada condição mais externa representa:
-	 * 		- Agressividade Baixa;
-	 * 		- Agressividade entre Baixa e Média;
-	 * 		- Agressividade Média;
-	 * 		- Agressividade entre Média e Alta;
-	 * 		- Agressividade Alta.
+	 * 		- hostilidade Baixa;
+	 * 		- hostilidade entre Baixa e Média;
+	 * 		- hostilidade Média;
+	 * 		- hostilidade entre Média e Alta;
+	 * 		- hostilidade Alta.
 	 * 
 	 * @return variavel defuzificada que servirá para definir a potencia do tiro
 	 */
@@ -152,43 +158,43 @@ public class KnightMare extends AdvancedRobot {
 		for (double i = 0.0; i <= 3.0; i+= precisao) {
 			
 			if (i >= 0.0 && i < 1.0) {
-				if (this.agressividadeBaixa != 0) {
-					variavelSaida += this.agressividadeBaixa * i;
-					controle++;
+				if (this.hostilidadeBaixa != 0) {
+					variavelSaida += this.hostilidadeBaixa * i;
+					controle += 1;
 				}
 			} else if (i <= 1.5) {
-				if (this.agressividadeBaixa > this.agressivadadeMedia) {
-					if (this.agressividadeBaixa > 0) {
-						variavelSaida += this.agressividadeBaixa * i;
-						controle++;
+				if (this.hostilidadeBaixa > this.hostilidadeMedia) {
+					if (this.hostilidadeBaixa > 0) {
+						variavelSaida += this.hostilidadeBaixa * i;
+						controle += 1;
 					}
 				} else {
-					if (this.agressivadadeMedia > 0) {
-						variavelSaida += this.agressivadadeMedia * i;
-						controle++;
+					if (this.hostilidadeMedia > 0) {
+						variavelSaida += this.hostilidadeMedia * i;
+						controle += 1;
 					}
 				}
 			} else if (i < 2.0) {
-				if (this.agressivadadeMedia > 0) {
-					variavelSaida += this.agressivadadeMedia * i;
-					controle++;
+				if (this.hostilidadeMedia > 0) {
+					variavelSaida += this.hostilidadeMedia * i;
+					controle += 1;
 				}
 			} else if (i <= 2.5) {
-				if (this.agressivadadeMedia > this.agressividadeAlta) {
-					if (this.agressivadadeMedia > 0) {
-						variavelSaida += this.agressivadadeMedia * i;
-						controle++;
+				if (this.hostilidadeMedia > this.hostilidadeAlta) {
+					if (this.hostilidadeMedia > 0) {
+						variavelSaida += this.hostilidadeMedia * i;
+						controle += 1;
 					}
 				} else {
-					if (this.agressividadeAlta > 0) {
-						variavelSaida += this.agressividadeAlta * i;
-						controle++;
+					if (this.hostilidadeAlta > 0) {
+						variavelSaida += this.hostilidadeAlta * i;
+						controle += 1;
 					}
 				}
 			} else if (i > 2.5) {
-				if (this.agressividadeAlta > 0) {
-					variavelSaida += this.agressividadeAlta * i;
-					controle++;
+				if (this.hostilidadeAlta > 0) {
+					variavelSaida += this.hostilidadeAlta * i;
+					controle += 1;
 				}
 			}		
 		}
@@ -199,43 +205,43 @@ public class KnightMare extends AdvancedRobot {
 	}
 
 	/**
-	 * Reseta a agressividade do robo para 0
+	 * Reseta a hostilidade do robo para 0
 	 */
-	private void resetAgressividade() {
-		this.agressividadeBaixa = 0;
-		this.agressivadadeMedia = 0;
-		this.agressividadeAlta = 0;
+	private void resetHostilidade() {
+		this.hostilidadeBaixa = 0;
+		this.hostilidadeMedia = 0;
+		this.hostilidadeAlta = 0;
 	}
 
 	/**
 	 * 
-	 * Gera a agressividade através do nível de energia e da distância:
+	 * Gera a hostilidade através do nível de energia e da distância:
 	 * 
-	 * 	- Energia Baixa e Distância curta, então agressividade dos tiros média;
-	 *  - Energia Baixa e Distância longa, então agressividade dos tiros baixa;
-	 * 	- Energia Alta e Distância curta, então agressividade dos tiros maior;
-	 *  - Energia Alta e Distância longa, então agressividade dos tiros menor;
+	 * 	- Energia Baixa e Distância curta, então hostilidade dos tiros média;
+	 *  - Energia Baixa e Distância longa, então hostilidade dos tiros baixa;
+	 * 	- Energia Alta e Distância curta, então hostilidade dos tiros maior;
+	 *  - Energia Alta e Distância longa, então hostilidade dos tiros menor;
 	 * 
 	 */
-	private void gerarAgressividade() {
+	private void criaHostilidade() {
 
 		if (this.energiaNivelBaixo > 0) {
 			if (this.distanciaCurta > 0) {
-				this.agressivadadeMedia += this.energiaNivelBaixo * this.distanciaCurta;
+				this.hostilidadeMedia += this.energiaNivelBaixo * this.distanciaCurta;
 			}
 
 			if (this.distanciaLonga > 0) {
-				this.agressividadeBaixa += this.energiaNivelBaixo * this.distanciaLonga;
+				this.hostilidadeBaixa += this.energiaNivelBaixo * this.distanciaLonga;
 			}
 		}
 		
 		if (this.energiaNivelAlto > 0) {
 			if (this.distanciaCurta > 0) {
-				this.agressividadeAlta += this.agressividadeAlta * this.distanciaCurta;
+				this.hostilidadeAlta += this.hostilidadeAlta * this.distanciaCurta;
 			}
 
 			if (this.distanciaLonga > 0) {
-				this.agressivadadeMedia += this.agressividadeAlta * this.distanciaLonga;
+				this.hostilidadeMedia += this.hostilidadeAlta * this.distanciaLonga;
 			}
 		}
 	}
